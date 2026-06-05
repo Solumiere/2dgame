@@ -1,6 +1,11 @@
-"""Buildings with enterable, randomly-generated interiors."""
+"""Buildings with enterable, randomly-generated interiors.
+
+Interior loot includes supplies (health/food/coins) and weapon ammo. Picking
+up ammo for a weapon you don't own unlocks that weapon.
+"""
 import random
 import pygame
+from .weapon import AMMO_NAMES, WEAPON_ORDER
 
 
 class Furniture:
@@ -11,8 +16,13 @@ class Furniture:
 
 
 class Item:
-    def __init__(self, rect, name):
+    """A pickup placed inside a building.
+    category: \"loot\" or \"ammo\"; key: loot name or ammo type."""
+    def __init__(self, rect, category, key, amount, name):
         self.rect = rect
+        self.category = category
+        self.key = key
+        self.amount = amount
         self.name = name
         self.taken = False
 
@@ -26,12 +36,10 @@ FURNITURE_KINDS = [
     ((140, 120, 95), "\u0422\u0443\u043c\u0431\u0430", (55, 80), (45, 60)),
 ]
 
-ITEM_NAMES = ["\u0410\u043f\u0442\u0435\u0447\u043a\u0430", "\u041f\u0430\u0442\u0440\u043e\u043d\u044b", "\u041c\u043e\u043d\u0435\u0442\u044b", "\u041a\u043b\u044e\u0447", "\u0415\u0434\u0430"]
+LOOT_DROPS = ["\u0410\u043f\u0442\u0435\u0447\u043a\u0430", "\u0415\u0434\u0430", "\u041c\u043e\u043d\u0435\u0442\u044b", "\u041a\u043b\u044e\u0447"]
 
 
 class Interior:
-    """A randomly generated room shown when the player enters a building.
-    Larger than the building footprint to feel roomy."""
     WALL = 26
     DOOR_W = 64
 
@@ -41,7 +49,6 @@ class Interior:
         self.furniture = []
         self.items = []
         gap_x = self.width // 2 - self.DOOR_W // 2
-        # Open gap at the bottom wall acts as the exit
         self.exit_gap = pygame.Rect(gap_x, self.height - self.WALL, self.DOOR_W, self.WALL)
         self.exit_trigger = pygame.Rect(gap_x, self.height - self.WALL - 6, self.DOOR_W, self.WALL + 6)
         self.generate()
@@ -63,7 +70,7 @@ class Interior:
             if any(rect.colliderect(f.rect.inflate(24, 24)) for f in self.furniture):
                 continue
             self.furniture.append(Furniture(rect, color, name))
-        # Loot items scattered around
+        # Loot: mix of supplies and weapon ammo
         for _ in range(random.randint(3, 6)):
             x = random.randint(w + 20, self.width - w - 20)
             y = random.randint(w + 20, self.height - w - 40)
@@ -72,16 +79,21 @@ class Interior:
                 continue
             if rect.colliderect(self.exit_gap.inflate(60, 60)):
                 continue
-            self.items.append(Item(rect, random.choice(ITEM_NAMES)))
+            if random.random() < 0.5:
+                atype = random.choice(WEAPON_ORDER[1:])  # smg/shotgun/rifle ammo
+                amount = random.randint(8, 20)
+                self.items.append(Item(rect, "ammo", atype, amount, AMMO_NAMES[atype]))
+            else:
+                name = random.choice(LOOT_DROPS)
+                self.items.append(Item(rect, "loot", name, 1, name))
 
     def wall_colliders(self):
-        w = self.W = self.WALL
+        w = self.WALL
         half = self.width // 2
         colliders = [
-            pygame.Rect(0, 0, self.width, w),                      # top
-            pygame.Rect(0, 0, w, self.height),                     # left
-            pygame.Rect(self.width - w, 0, w, self.height),        # right
-            # bottom split into two pieces leaving the door gap
+            pygame.Rect(0, 0, self.width, w),
+            pygame.Rect(0, 0, w, self.height),
+            pygame.Rect(self.width - w, 0, w, self.height),
             pygame.Rect(0, self.height - w, half - self.DOOR_W // 2, w),
             pygame.Rect(half + self.DOOR_W // 2, self.height - w,
                         self.width - (half + self.DOOR_W // 2), w),
@@ -93,20 +105,17 @@ class Interior:
         return (self.width, self.height)
 
     def spawn_point(self):
-        """Where the player appears when entering (just above the exit)."""
         return pygame.math.Vector2(self.width // 2, self.height - self.WALL - 40)
 
 
 class Building:
     def __init__(self, rect):
-        self.rect = rect  # exterior footprint (solid block) in world coords
+        self.rect = rect
         self.wall_color = random.choice([(96, 76, 64), (84, 80, 92), (74, 86, 78)])
         self.roof_color = random.choice([(62, 46, 40), (56, 52, 64), (50, 60, 54)])
         door_w = 56
         dx = rect.centerx - door_w // 2
         self.door_rect = pygame.Rect(dx, rect.bottom - 10, door_w, 18)
-        # Trigger sits just outside the bottom wall so the player reaches it
-        # before colliding with the solid building block.
         self.door_trigger = pygame.Rect(dx, rect.bottom, door_w, 26)
         self._interior = None
 
@@ -117,6 +126,4 @@ class Building:
         return self._interior
 
     def outside_spawn(self):
-        """Where the player appears after leaving (below the door)."""
-        return pygame.math.Vector2(self.door_trigger.centerx,
-                                   self.door_trigger.bottom + 28)
+        return pygame.math.Vector2(self.door_trigger.centerx, self.door_trigger.bottom + 28)
