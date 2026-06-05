@@ -1,0 +1,51 @@
+"""Global constants and tunable settings for the game."""
+
+# --- Display ---
+WIDTH = 1280
+HEIGHT = 720
+FPS = 60
+TITLE = "2D Zombie Survival"
+
+# --- World ---
+WORLD_WIDTH = 4200
+WORLD_HEIGHT = 4200
+TILE_SIZE = 64
+NUM_BUILDINGS = 9
+NUM_TREES = 240
+NUM_CARS = 45
+
+# --- Colors ---
+GRASS = (32, 52, 34)
+GRASS_ALT = (38, 60, 40)
+WHITE = (240, 240, 240)
+BLACK = (8, 8, 10)
+RED = (205, 70, 70)
+GREEN = (90, 200, 95)
+BLUE = (90, 150, 225)
+YELLOW = (235, 215, 90)
+ORANGE = (230, 150, 70)
+BROWN = (110, 80, 50)
+DARK = (18, 18, 22)
+GRAY = (95, 95, 105)
+FLOOR = (66, 55, 48)
+WALL = (42, 36, 33)
+TREE_TRUNK = (80, 58, 40)
+TREE_LEAF = (46, 96, 52)
+
+# --- Player ---
+PLAYER_SIZE = 28
+PLAYER_BASE_SPEED = 230.0
+PLAYER_BASE_HP = 100.0
+PLAYER_BASE_DAMAGE = 22.0
+PLAYER_FIRE_RATE = 0.22  # seconds between shots
+PLAYER_PICKUP_RADIUS = 120.0
+
+# --- Bullet ---
+BULLET_SPEED = 720.0
+BULLET_RADIUS = 4
+BULLET_LIFETIME = 1.1
+
+# --- Enemies ---
+SPAWN_INTERVAL = 1.4
+MAX_ENEMIES = 70
+ENEMY_CONTACT_COOLDOWN = 0.6
