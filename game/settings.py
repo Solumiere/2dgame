@@ -23,7 +23,7 @@ RED = (205, 70, 70)
 GREEN = (90, 200, 95)
 BLUE = (90, 150, 225)
 YELLOW = (235, 215, 90)
-ORANGE = (230, 150, 70)
+ORANGE = (235, 160, 70)
 BROWN = (110, 80, 50)
 DARK = (18, 18, 22)
 GRAY = (95, 95, 105)
@@ -34,14 +34,11 @@ TREE_LEAF = (46, 96, 52)
 
 # --- Player ---
 PLAYER_SIZE = 28
-PLAYER_BASE_SPEED = 230.0
+PLAYER_BASE_SPEED = 230.0   # constant: speed does NOT grow on level up
 PLAYER_BASE_HP = 100.0
-PLAYER_BASE_DAMAGE = 22.0
-PLAYER_FIRE_RATE = 0.22  # seconds between shots
-PLAYER_PICKUP_RADIUS = 120.0
+PLAYER_PICKUP_RADIUS = 130.0
 
 # --- Bullet ---
-BULLET_SPEED = 720.0
 BULLET_RADIUS = 4
 BULLET_LIFETIME = 1.1
 
@@ -49,3 +46,9 @@ BULLET_LIFETIME = 1.1
 SPAWN_INTERVAL = 1.4
 MAX_ENEMIES = 70
 ENEMY_CONTACT_COOLDOWN = 0.6
+
+# --- Cars / driving ---
+CAR_ACCEL = 560.0
+CAR_DECEL = 360.0
+FUEL_BURN = 0.010      # fuel units per (speed * second)
+ENTER_RADIUS = 80.0

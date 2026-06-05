@@ -1,15 +1,17 @@
-"""Projectiles fired by the player."""
+"""Projectiles. Used by the player (friendly) and by ranged enemies."""
 import pygame
 from . import settings as s
 
 
 class Bullet:
-    def __init__(self, x, y, direction, damage):
+    def __init__(self, x, y, direction, damage, speed=720, friendly=True, color=None):
         self.pos = pygame.math.Vector2(x, y)
-        self.vel = direction * s.BULLET_SPEED
+        self.vel = direction * speed
         self.damage = damage
         self.life = s.BULLET_LIFETIME
         self.radius = s.BULLET_RADIUS
+        self.friendly = friendly
+        self.color = color or (s.WHITE if friendly else s.ORANGE)
         self.dead = False
 
     @property
